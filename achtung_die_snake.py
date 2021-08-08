@@ -24,7 +24,7 @@ class Snakegame:
 
         self.snake_block = 10
         self.clock = pygame.time.Clock()
-        self.snake_speed = 15
+        self.snake_speed = 10
 
 
         self.font_style = pygame.font.SysFont('comicsansms', 20, italic=True)
@@ -55,6 +55,21 @@ class Snakegame:
         y = round(random.randrange(0, self.dis_height - self.snake_block) / 10) * 10
         return x, y
 
+    def walk_x(self, direction):
+        if direction == 0 or direction == 2:
+            return 0
+        elif direction == 1:
+            return self.snake_block
+        else:
+            return -self.snake_block
+
+    def walk_y(self, direction):
+        if direction == 1 or direction == 3:
+            return 0
+        elif direction == 2:
+            return self.snake_block
+        else:
+            return -self.snake_block
 
     def gameloop(self):
         game_close = False
@@ -63,9 +78,11 @@ class Snakegame:
 
         x1 = self.dis_width / 2
         y1 = self.dis_height / 2
+        direction1 = random.randint(0,3)
 
         x2 = self.dis_width / 4
         y2 = self.dis_height / 4
+        direction2 = random.randint(0,3)
 
         foodx, foody = self.create_food()
 
@@ -75,6 +92,7 @@ class Snakegame:
         snake_length2 = 1
 
         while not game_over:
+
             has_changed = False
             has_changed2 = False
             while game_close or game_close2:
@@ -96,31 +114,21 @@ class Snakegame:
 
                     #player 1 keyboard actions
                     if event.key == pygame.K_LEFT:
-                        x1 += -self.snake_block
-                        has_changed = True
+                        direction1 = (direction1-1)%4
                     elif event.key == pygame.K_RIGHT:
-                        x1 += self.snake_block
-                        has_changed = True
-                    elif event.key == pygame.K_UP:
-                        y1 += -self.snake_block
-                        has_changed = True
-                    elif event.key == pygame.K_DOWN:
-                        y1 += self.snake_block
-                        has_changed = True
+                        direction1 = (direction1+1)%4
 
                     ##player 2 keyboard actions
                     if event.key == pygame.K_a:
-                        x2 += -self.snake_block
-                        has_changed2 = True
+                        direction2 = (direction2-1)%4
                     elif event.key == pygame.K_d:
-                        x2 += self.snake_block
-                        has_changed2 = True
-                    elif event.key == pygame.K_w:
-                        y2 += -self.snake_block
-                        has_changed2 = True
-                    elif event.key == pygame.K_s:
-                        y2 += self.snake_block
-                        has_changed2 = True
+                        direction2 = (direction2+1)%4
+
+            x1 += self.walk_x(direction1)
+            y1 += self.walk_y(direction1)
+
+            x2 += self.walk_x(direction2)
+            y2 += self.walk_y(direction2)
 
             game_close = self.cross_screen(x1, y1)
             game_close2 = self.cross_screen(x2, y2)
@@ -128,35 +136,33 @@ class Snakegame:
             self.dis.fill(self.black)
             pygame.draw.rect(self.dis, self.green, [foodx, foody, self.snake_block, self.snake_block])
 
-            if has_changed:
-                snake_head = [x1, y1]
-                snake_list += [snake_head]
+            snake_head = [x1, y1]
+            snake_list += [snake_head]
 
-                if len(snake_list) > snake_length:
-                    del snake_list[0]
+            if len(snake_list) > snake_length:
+                del snake_list[0]
 
-                for x in snake_list[:-1]:
-                    if x == snake_head:
-                        game_close = True
+            for x in snake_list[:-1]:
+                if x == snake_head:
+                    game_close = True
 
-                for x in snake_list2[:-1]:
-                    if x == snake_head:
-                        game_close = True
+            for x in snake_list2[:-1]:
+                if x == snake_head:
+                    game_close = True
 
-            if has_changed2:
-                snake_head2 = [x2, y2]
-                snake_list2 += [snake_head2]
+            snake_head2 = [x2, y2]
+            snake_list2 += [snake_head2]
 
-                if len(snake_list2) > snake_length2:
-                    del snake_list2[0]
+            if len(snake_list2) > snake_length2:
+                del snake_list2[0]
 
-                for x in snake_list[:-1]:
-                    if x == snake_head2:
-                        game_close2 = True
+            for x in snake_list[:-1]:
+                if x == snake_head2:
+                    game_close2 = True
 
-                for x in snake_list2[:-1]:
-                    if x == snake_head2:
-                        game_close = True
+            for x in snake_list2[:-1]:
+                if x == snake_head2:
+                    game_close = True
 
             self.our_snake(self.snake_block, snake_list, self.red)
             self.our_snake(self.snake_block, snake_list2, self.white)
