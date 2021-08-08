@@ -3,13 +3,8 @@ import pygame
 import time
 import random
 
-
-
-
 dis_width = 600
 dis_height = 400
-
-
 
 
 pygame.init()
